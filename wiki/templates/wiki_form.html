@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<style type="text/css">
+	
+	.error {
+		color:red;
+	}
+
+	
+
+	input[type=text] {
+		width: 600px;
+		font-size: 20px;
+
+	}
+
+	textarea {
+		width: 600px;
+		height: 600px;
+		font-size: 14px;
+		font-family: monospace;
+	}
+
+	input[type=submit]{
+		font-size: 24px
+	}
+
+	
+	</style>
+	
+		<h1>The Hack{ett} Wiki</h1>
+		
+		<form method = "post">
+			<label>
+				<div>Title</div>
+				<input type="text" name="subject" value="{{subject}}">
+			</label>
+			<label>
+				<div>Content</div>
+				<textarea name="content">{{content}}</textarea>
+			</label>
+			<div class="error">{{error}}</div>
+			<input type = "submit">
+		</form>
+	
+{% endblock %}
+ 

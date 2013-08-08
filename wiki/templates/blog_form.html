@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>The Hack{ett}</title>
+	</head>
+	<style type="text/css">
+	body {
+		font-family: sans-serif;
+		width: 800px;
+		margin: 0 auto;
+		padding: 10px;
+	}
+
+	.error {
+		color:red;
+	}
+
+	label {
+		display: block;
+		font-size: 20px;
+	}
+
+	input[type=text] {
+		width: 600px;
+		font-size: 20px;
+
+	}
+
+	textarea {
+		width: 600px;
+		height: 600px;
+		font-size: 14px;
+		font-family: monospace;
+	}
+
+	input[type=submit]{
+		font-size: 24px
+	}
+
+	.top_links {
+		display:inline;
+		text-align: center;
+	}
+
+	
+	</style>
+	<body>
+		<h1>The Hack{ett} Wiki</h1>
+		
+		<form method = "post">
+			<label>
+				<div>Title</div>
+				<input type="text" name="Title" value="{{title}}">
+			</label>
+			<label>
+				<div>Content</div>
+				<textarea name="content">{{content}}</textarea>
+			</label>
+			<div class="error">{{error}}</div>
+			<input type = "submit">
+		</form>
+	
+
+   	</body>
+</html>
