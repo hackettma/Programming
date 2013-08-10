@@ -4,7 +4,7 @@
 <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="active"><a href="/">Home</a></li>
-              {% if user.user %}
+              {% if user %}
                 <li>{{user.user}}</li>
                 <li><a href="/Logout">Logout</a></li>
               {% else %}
