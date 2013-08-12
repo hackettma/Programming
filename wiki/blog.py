@@ -7,7 +7,10 @@ import webapp2
 import jinja2
 from google.appengine.ext import db
 import hashlib
+import hmac
 import urllib2
+import random
+from string import letters
 from xml.dom import minidom
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -25,6 +28,28 @@ def check_secure_val(secure_val):
         return val
 secret = 'fart'
 
+def valid_username(user_name):
+    USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+    if USER_RE.match(user_name):
+        return True
+    else:
+        return False
+
+def valid_pwd(pwd):
+    PWD_RE = re.compile(r"^.{3,20}$")
+    if PWD_RE.match(pwd):
+        return True
+    else:
+        return False
+
+def valid_email(email):
+    EMAIL_RE = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
+    if email == "":
+      return True
+    elif EMAIL_RE.match(email):
+        return True
+    else:
+        return False
 
 class BaseHandler(webapp2.RequestHandler):
   def write(self, *a, **kw):
@@ -43,17 +68,17 @@ class BaseHandler(webapp2.RequestHandler):
             'Set-Cookie',
             '%s=%s; Path=/' % (name, cookie_val))
 
-    def read_secure_cookie(self, name):
+  def read_secure_cookie(self, name):
         cookie_val = self.request.cookies.get(name)
         return cookie_val and check_secure_val(cookie_val)
 
-    def login(self, user):
+  def login(self, user):
         self.set_secure_cookie('user_id', str(user.key().id()))
 
-    def logout(self):
+  def logout(self):
         self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
 
-    def initialize(self, *a, **kw):
+  def initialize(self, *a, **kw):
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
@@ -119,20 +144,64 @@ class MainPage(BaseHandler):
     self.render_front(wikis=wikis)
 
 class Signup(BaseHandler):
-  def render_front(self):
-    self.render("index.html")
+  def get(self, user_name="", err_usr="", err_pwd="", err_cnfrm="", err_eml=""):
+    self.render("user_form.html", user_name=user_name, err_usr=err_usr, err_pwd=err_pwd, err_cnfrm=err_cnfrm, err_eml=err_eml)
+
+  def post(self):
+      user_name_in = self.request.get('username')
+      user_pwd = self.request.get('password')
+      user_cnfrm_pwd = self.request.get('verify')
+      user_email = self.request.get('email')
+
+      error_usr_txt = "Invalid Username"
+      error_pwd_txt = "Invalid Password"
+      error_cnfrm_txt = "Password does not match"
+      error_email_txt = "Invalid email address"
+      out_params = {}
+      out_params['username'] = user_name_in
 
 
-  def get(self):
-    self.render_front()
+      user = User.by_name(user_name_in)
+
+      if valid_username(user_name_in) and not user:
+        if valid_pwd(user_pwd):
+          if user_pwd == user_cnfrm_pwd:
+            if valid_email(user_email):
+              user = User.register(user_name_in, user_pwd, user_email)
+              user.put()
+              self.login(user)
+              self.redirect("/")
+            else:
+              out_params['err_eml'] = error_email_txt
+              self.render('user_form.html', **out_params)    
+          else:
+            out_params['err_cnfrm'] = error_cnfrm_txt
+            self.render('user_form.html', **out_params)
+        else:
+          out_params['err_pwd'] = error_pwd_txt
+          out_params['err_usr'] = error_usr_txt
+          self.render('user_form.html', **out_params)
+      else:
+        out_params['err_usr'] = error_usr_txt
+        self.render('user_form.html', **out_params)
 
 class Login(BaseHandler):
-  def render_front(self):
-    self.render("index.html")
 
+  def get(self, user_name="", err_usr="", err_pwd=""):
+    self.render("login_form.html", user_name=user_name, err_usr=err_usr, err_pwd=err_pwd)
 
-  def get(self):
-    self.render_front()
+  def post(self):
+    username = self.request.get('username')
+    pwd = self.request.get('password')
+
+    user = User.login(username, pwd)
+    if user:
+      self.login(user)
+      self.redirect('/')
+    else:
+      params = {'user_name': username, 'err_usr':"Username invalid", 'err_pwd': "Password Invalid"}
+      self.render("login_form.html",**params)
+
 
 class Logout(BaseHandler):
   def render_front(self):
