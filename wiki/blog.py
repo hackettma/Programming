@@ -51,13 +51,17 @@ def valid_email(email):
     else:
         return False
 
+def render_str(template, **params):
+    t = jinja_env.get_template(template)
+    return t.render(params)
+
 class BaseHandler(webapp2.RequestHandler):
   def write(self, *a, **kw):
     self.response.out.write(*a, **kw)
 
   def render_str(self, template, **params):
-    t = jinja_env.get_template(template)
-    return t.render(params)
+    params['user'] = self.user
+    return render_str(template, **params)
 
   def render(self, template, **kw):
     self.write(self.render_str(template, **kw))  
@@ -210,7 +214,7 @@ class Logout(BaseHandler):
 
   def get(self):
     self.logout()
-    self.render_front()
+    self.redirect('/')
 
 class EditPage(BaseHandler):
 

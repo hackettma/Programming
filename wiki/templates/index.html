@@ -5,10 +5,10 @@
             <ul class="nav">
               <li class="active"><a href="/">Home</a></li>
               {% if user %}
-                <li>{{user.user}}</li>
-                <li><a href="/Logout">Logout</a></li>
+                <li>{{user.name}}</li>
+                <li><a href="/logout">Logout</a></li>
               {% else %}
-                <li><a href="/Login">Login</a></li>
+                <li><a href="/login">Login</a></li>
               {% endif %}
             </ul>
   </div>
