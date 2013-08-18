@@ -144,7 +144,7 @@ class MainPage(BaseHandler):
 
 
   def get(self):
-    wikis = db.GqlQuery("SELECT * FROM Wiki ORDER BY title ASC LIMIT 1")
+    wikis = db.GqlQuery("SELECT * FROM Wiki ORDER BY title ASC LIMIT 10")
     self.render_front(wikis=wikis)
 
 class Signup(BaseHandler):
@@ -221,14 +221,23 @@ class EditPage(BaseHandler):
   def render_front(self, subject="", content="", error=""):
     self.render("wiki_form.html", subject=subject, content=content, error=error)
   
-  def get(self, wikipage):
-    wikis = db.GqlQuery("SELECT * FROM Wiki ORDER BY created DESC")
-    for wiki in wikis:
-      if wiki.title == wikipage[1:]:
-        self.render_front(subject=wiki.title, content=wiki.content)
-        break
+  def get(self, wikipage=""):
+    if not wikipage:
+      self.render_front()
     else:
-        self.render_front(subject=wikipage[1:])
+
+      wikis = db.GqlQuery("SELECT * FROM Wiki ORDER BY created DESC LIMIT 1")
+      if self.user:
+        for wiki in wikis:
+          if wiki.title == wikipage[1:]:
+            self.render_front(subject=wiki.title, content=wiki.content)
+            break
+        else:
+            self.render_front(subject=wikipage[1:])
+      elif wikis[0].title ==wikipage[1:]:
+        self.redirect(wikipage)
+      else:
+        self.redirect('/signup')
 
   def post(self, wikipage):
     title_post = self.request.get('subject')
@@ -253,7 +262,7 @@ class WikiPage(BaseHandler):
         self.render_front(subject=wiki.title, content=wiki.content)
         break
     else:
-        self.redirect('_edit' + wikipage)
+        self.redirect('/_edit' + wikipage)
 
 
 class TestPage(BaseHandler):
@@ -271,6 +280,7 @@ app = webapp2.WSGIApplication([ ('/', MainPage),
                                 ('/login', Login),
                                 ('/logout', Logout),
                                 ('/test', TestPage),
+                                ('/_edit', EditPage),
                                 ('/_edit' + PAGE_RE, EditPage),
                                 (PAGE_RE, WikiPage),
                                 ],

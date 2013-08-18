@@ -1,28 +1,11 @@
 {% extends "base.html" %}
 
-{% block nav %}
-<div class="nav-collapse collapse">
-            <ul class="nav">
-              <li class="active"><a href="/">Home</a></li>
-              {% if user %}
-                <li>{{user.name}}</li>
-                <li><a href="/logout">Logout</a></li>
-              {% else %}
-                <li><a href="/login">Login</a></li>
-              {% endif %}
-            </ul>
-  </div>
-
-{% endblock %}
-
-
 {% block content %}
 
   <ul>
   {% for wiki in wikis %}
-    <li><h2><a href='/{{wiki.title}}'>{{wiki.title}}</a></h2>
-
-    <br></li>
+    <h3><li><a href='/{{wiki.title}}'>{{wiki.title}}</a></li></h3>
+	<br>
   {% endfor %}
   </ul>
 

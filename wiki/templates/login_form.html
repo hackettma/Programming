@@ -1,7 +1,5 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Login Form</title>
+{% extends "base.html" %}
+{% block content %}
 		<style>
 			.input_form {
 				text-align: right;
@@ -13,8 +11,7 @@
 			}
 		
 		</style>
-	</head>
-	<body>
+	
 		<h1>Login</h1>
 		<form method = "Post">
 			<table>
@@ -29,5 +26,4 @@
 				<tr><td><input type="Submit"></td></tr>
    			</table>
    		</form>
-   	</body>
-</html>
+{% endblock %}   	
