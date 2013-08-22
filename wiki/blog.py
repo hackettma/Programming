@@ -144,7 +144,7 @@ class MainPage(BaseHandler):
 
 
   def get(self):
-    wikis = db.GqlQuery("SELECT * FROM Wiki ORDER BY title ASC LIMIT 10")
+    wikis = db.GqlQuery("SELECT DISTINCT title FROM Wiki")
     self.render_front(wikis=wikis)
 
 class Signup(BaseHandler):
@@ -222,22 +222,22 @@ class EditPage(BaseHandler):
     self.render("wiki_form.html", subject=subject, content=content, error=error)
   
   def get(self, wikipage=""):
-    if not wikipage:
-      self.render_front()
-    else:
+    if self.user:
+      if not wikipage:
+        self.render_front()
+      else:
 
-      wikis = db.GqlQuery("SELECT * FROM Wiki ORDER BY created DESC LIMIT 1")
-      if self.user:
+        wikis = db.GqlQuery("SELECT * FROM Wiki ORDER BY created DESC LIMIT 1")
+        
         for wiki in wikis:
           if wiki.title == wikipage[1:]:
             self.render_front(subject=wiki.title, content=wiki.content)
             break
         else:
-            self.render_front(subject=wikipage[1:])
-      elif wikis[0].title ==wikipage[1:]:
-        self.redirect(wikipage)
-      else:
-        self.redirect('/signup')
+              self.render_front(subject=wikipage[1:])
+      
+    else:
+        self.redirect('/login')
 
   def post(self, wikipage):
     title_post = self.request.get('subject')
@@ -267,7 +267,7 @@ class WikiPage(BaseHandler):
 
 class TestPage(BaseHandler):
   def get(self):
-    self.response.out.write(self.request.get('title'))
+    self.response.out.write(self.request.path)
 
 
 
