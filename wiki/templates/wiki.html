@@ -1,19 +1,5 @@
 {% extends "base.html" %}
 
-{% block nav %}
-<div class="nav-collapse collapse">
-            <ul class="nav">
-              <li class="active"><a href="/">Home</a></li>
-              {% if logged_in %}
-              <li>Welcome, {{user}}</li>
-              <li><a href="/Logout">Logout</a></li>
-              <li><a href="/Login">Login</a></li>
-              <li><a href="/_edit">Edit</a></li>
-              {% endif %}
-            </ul>
-          </div>
-
-{% endblock %}
 
 
 {% block content %}
@@ -35,11 +21,7 @@
 
 	
 	</style>
-	
-		<h1>The Hack{ett} Wiki</h1>
 		
-		<br>
-		<div id="Subject"><h2>{{subject}}</h2></div>
 		<br>
 		<div id="Content">{{content}}</div>
 				
